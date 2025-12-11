@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Global Internet Speed Analyzer — Showcase</title>
+
+  <!-- Chart.js & PapaParse -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>Global Internet Speed Analyzer</h1>
+    <p class="subtitle">Interactive STEAM project — explore speeds, growth & inequality</p>
+  </header>
+
+  <main class="wrap">
+    <section class="controls card">
+      <div class="row">
+        <div class="col">
+          <label for="regionSelect">Filter by region (continent):</label>
+          <select id="regionSelect"><option value="All">All regions</option></select>
+        </div>
+
+        <div class="col">
+          <label for="searchBox">Search country:</label>
+          <input id="searchBox" placeholder="Type country name..." />
+        </div>
+
+        <div class="col">
+          <label>Quick actions:</label>
+          <div class="btnrow">
+            <button id="btn-highlow">Highest / Lowest (2024)</button>
+            <button id="btn-improve">Biggest Improvement (2023→2024)</button>
+            <button id="btn-dii">Digital Inequality Index</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="row small">
+        <div class="col stat">
+          <div class="stat-title">Total countries loaded</div>
+          <div id="totalCount" class="stat-value">—</div>
+        </div>
+        <div class="col stat">
+          <div class="stat-title">Records shown</div>
+          <div id="shownCount" class="stat-value">—</div>
+        </div>
+        <div class="col stat">
+          <div class="stat-title">Records added (session)</div>
+          <div id="addedCount" class="stat-value">0</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card grid2">
+      <div>
+        <h3>Results</h3>
+        <div id="results" class="results">Choose a region or click an analysis button.</div>
+
+        <h3 style="margin-top:18px">Charts</h3>
+        <canvas id="regionChart" height="160"></canvas>
+      </div>
+
+      <div>
+        <h3>Country trend (select a country to view)</h3>
+        <select id="countrySelect"><option value="">— choose country —</option></select>
+        <canvas id="trendChart" height="220" style="margin-top:10px"></canvas>
+
+        <div class="small-controls" style="margin-top:10px">
+          <button id="exportCSV">Export table as CSV</button>
+          <button id="downloadJSON">Download JSON</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>Data table (click header to sort) <small style="opacity:.7">• double-click a row to add to local storage</small></h3>
+
+      <div class="table-controls">
+        <label for="pageSize">Rows: </label>
+        <select id="pageSize">
+          <option>10</option><option>25</option><option>50</option><option>100</option>
+        </select>
+        <button id="clearLocal">Clear saved entries</button>
+      </div>
+
+      <div class="table-wrap">
+        <table id="dataTable">
+          <thead>
+            <tr>
+              <th data-key="country">Country</th>
+              <th data-key="major_area">Continent</th>
+              <th data-key="region">Region</th>
+              <th data-key="year 2023">2023</th>
+              <th data-key="year 2024">2024</th>
+              <th data-key="growth">Δ (24-23)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="pagination">
+        <button id="prevPage">Prev</button>
+        <span id="pageInfo">1</span>
+        <button id="nextPage">Next</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>Add a new or correct a record (saves in browser)</h3>
+      <form id="addForm">
+        <div class="row">
+          <input id="a_country" placeholder="Country" required />
+          <input id="a_major" placeholder="Continent (major_area)" required />
+          <input id="a_region" placeholder="Region" required />
+        </div>
+        <div class="row">
+          <input id="a_2023" placeholder="2023 speed (number or blank)" />
+          <input id="a_2024" placeholder="2024 speed (number or blank)" />
+        </div>
+        <div class="row">
+          <button type="submit">Add / Save</button>
+          <button id="resetForm" type="button">Reset</button>
+        </div>
+      </form>
+    </section>
+
+  </main>
+
+  <footer class="foot">Built for STEAM Showcase — interactive data visualizer</footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
