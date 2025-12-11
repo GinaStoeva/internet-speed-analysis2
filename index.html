@@ -1,148 +1,127 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Internet Speeds Explorer — SDG 9 Showcase</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Internet Speeds Explorer — SDG 9 Showcase</title>
 
-  <!-- Fonts & libraries -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+<!-- Fonts & libraries -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
 
-  <!-- Chart.js, Leaflet, topojson, AOS, html2canvas, jspdf, Three.js, Globe.gl -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <script src="https://unpkg.com/three@0.152.2/build/three.min.js"></script>
-  <script src="https://unpkg.com/globe.gl@2.26.10/dist/globe.gl.min.js"></script>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/topojson-client@3"></script>
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- Chart.js, Globe.gl, Three.js, html2canvas, jspdf -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/three@0.153.0/build/three.min.js"></script>
+<script src="https://unpkg.com/globe.gl"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-  <style>
-    :root{--bg:#071427;--card:#0b1220;--muted:#9aa7b2;--accent:#7dd3fc;--accent2:#60a5fa;--text:#e6eef6;--glass:rgba(255,255,255,0.03);font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;background:linear-gradient(180deg,#031026 0%,#071427 100%);color:var(--text)}
-    header{display:flex;justify-content:space-between;align-items:center;padding:18px 28px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));backdrop-filter: blur(6px);}
-    .brand{display:flex;flex-direction:column}
-    .brand h1{margin:0;font-size:20px}
-    .subtitle{color:var(--muted);font-size:13px}
-    .controls{display:flex;gap:10px;align-items:center}
-    .btn{background:linear-gradient(180deg,var(--accent),var(--accent2));padding:8px 12px;border-radius:10px;color:#042027;border:none;cursor:pointer;font-weight:700}
-    .ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--text)}
-    .container{max-width:1200px;margin:24px auto;padding:0 18px}
-    .panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:12px;margin-bottom:14px}
-    .row{display:flex;gap:12px}
-    .col{flex:1}
-    input,select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:var(--glass);color:var(--text)}
-    .results{display:flex;gap:12px;margin-top:12px}
-    canvas{max-width:100%}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
-    .small{font-size:13px;color:var(--muted)}
-    #map{height:420px;border-radius:10px}
-    #globeViz{height:480px;border-radius:10px;background:#071427}
-    footer{text-align:center;color:var(--muted);margin:18px 0}
-    .kpiRow{display:flex;gap:12px}
-    .kpi{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;text-align:center}
-    .panel-flex{display:flex;gap:12px}
-    .left-flex{flex:1}
-    .right-flex{flex:1;min-width:360px}
-    .infoBox{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:12px;border-radius:10px}
-    @media (max-width:900px){.row{flex-direction:column}}
-  </style>
+<style>
+:root {
+  --bg:#071427; --card:#0b1220; --muted:#9aa7b2; --accent:#7dd3fc; --accent2:#60a5fa; --text:#e6eef6;
+  font-family:Inter,system-ui,Segoe UI,Roboto,Arial;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%;background:linear-gradient(180deg,#031026 0%,#071427 100%);color:var(--text);}
+header{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));backdrop-filter: blur(6px);}
+.brand h1{margin:0;font-size:20px}
+.subtitle{color:var(--muted);font-size:13px}
+.controls{display:flex;gap:10px;align-items:center}
+.btn{background:linear-gradient(180deg,var(--accent),var(--accent2));padding:8px 12px;border-radius:10px;color:#042027;border:none;cursor:pointer;font-weight:700}
+.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--text)}
+.container{max-width:1400px;margin:24px auto;padding:0 18px}
+.panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:16px;border-radius:12px;margin-bottom:16px}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.col{flex:1}
+input,select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.03);color:var(--text)}
+canvas{max-width:100%}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.small{font-size:13px;color:var(--muted)}
+#globeViz{width:100%;height:500px;border-radius:12px;background:#031026;}
+footer{text-align:center;color:var(--muted);margin:18px 0}
+.kpiRow{display:flex;gap:12px;flex-wrap:wrap}
+.kpi{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;text-align:center;flex:1;min-width:120px}
+@media(max-width:800px){.row{flex-direction:column}}
+</style>
 </head>
 <body>
-  <header>
-    <div class="brand">
-      <h1>Internet Speeds Explorer — SDG 9</h1>
-      <div class="subtitle">Industry, Innovation &amp; Infrastructure — interactive analysis of global internet speeds</div>
+<header>
+  <div class="brand">
+    <h1>Internet Speeds Explorer — SDG 9</h1>
+    <div class="subtitle">Industry, Innovation & Infrastructure — interactive global analysis</div>
+  </div>
+  <div class="controls">
+    <label style="display:flex;align-items:center;gap:8px">
+      <input id="csvFile" type="file" accept=".csv" style="display:none">
+      <button id="uploadBtn" class="btn">Upload CSV</button>
+    </label>
+    <button id="useSample" class="btn ghost">Use Sample</button>
+    <button id="exportReport" class="btn ghost">Export PDF</button>
+  </div>
+</header>
+
+<main class="container">
+  <section class="panel" data-aos="fade-up">
+    <div class="row">
+      <div class="col">
+        <label class="small">Choose year</label>
+        <select id="yearSelect">
+          <option value="2024">2024</option>
+          <option value="2023">2023</option>
+          <option value="both">Compare 2023 vs 2024</option>
+        </select>
+      </div>
+      <div class="col">
+        <label class="small">Select countries (comma-separated)</label>
+        <input id="countryInput" placeholder="e.g. USA, China, Germany" />
+      </div>
+      <div style="display:flex;align-items:end;gap:8px;width:200px">
+        <button id="runQuery" class="btn">Run Query</button>
+      </div>
     </div>
-
-    <div class="controls">
-      <label style="display:flex;align-items:center;gap:8px"><input id="csvFile" type="file" accept=".csv" style="display:none"><button id="uploadBtn" class="btn">Upload CSV</button></label>
-      <button id="useSample" class="btn ghost">Use Sample</button>
-      <button id="showKPI" class="btn ghost">Show KPIs</button>
-      <button id="exportReport" class="btn ghost">Export PDF</button>
-      <button id="toggleTheme" class="btn ghost">Theme</button>
+    <div class="results" style="margin-top:12px">
+      <div class="kpiRow">
+        <div class="kpi"><div class="small">Global avg (2024)</div><div id="kpiAvg" style="font-weight:800;font-size:20px">—</div></div>
+        <div class="kpi"><div class="small">Countries improved</div><div id="kpiGrowth" style="font-weight:800;font-size:20px">—</div></div>
+        <div class="kpi"><div class="small">SDG-9 Impact</div><div id="kpiImpact" style="font-weight:800;font-size:20px">—</div></div>
+      </div>
     </div>
-  </header>
+  </section>
 
-  <main class="container">
+  <section class="panel grid" data-aos="fade-up">
+    <div class="card">
+      <h3>Selected Country Comparison</h3>
+      <canvas id="countryChart"></canvas>
+    </div>
+    <div class="card">
+      <h3>Top Countries (2024)</h3>
+      <canvas id="topChart"></canvas>
+    </div>
+    <div class="card">
+      <h3>Outliers</h3>
+      <div id="outliers" class="small">—</div>
+    </div>
+  </section>
 
-    <section class="panel" data-aos="fade-up">
-      <div class="row">
-        <div class="col">
-          <label class="small">Choose year</label>
-          <select id="yearSelect"><option value="2024">2024</option><option value="2023">2023</option><option value="both">Compare 2023 vs 2024</option></select>
-        </div>
-        <div class="col">
-          <label class="small">Enter continent (major area)</label>
-          <input id="continentInput" placeholder="e.g. Asia, Europe, Americas, Africa, Oceania" />
-        </div>
-        <div style="width:220px;display:flex;gap:8px;align-items:end">
-          <button id="runQuery" class="btn">Run Query</button>
-          <button id="topNBtn" class="btn ghost">Top 10</button>
-        </div>
-      </div>
+  <section class="panel" data-aos="fade-up">
+    <h3>Interactive 3D Globe</h3>
+    <div id="globeViz"></div>
+  </section>
 
-      <div class="results" style="margin-top:12px">
-        <div class="kpiRow">
-          <div class="kpi"><div class="small">Global avg (2024)</div><div id="kpiAvg" style="font-weight:800;font-size:20px">—</div></div>
-          <div class="kpi"><div class="small">Countries improved</div><div id="kpiGrowth" style="font-weight:800;font-size:20px">—</div></div>
-          <div class="kpi"><div class="small">SDG-9 Impact</div><div id="kpiImpact" style="font-weight:800;font-size:20px">—</div></div>
-        </div>
-        <div style="flex:1"></div>
-      </div>
-    </section>
+  <section class="panel" data-aos="fade-up">
+    <h3>Project Story — SDG 9</h3>
+    <p class="small">This project highlights SDG 9: Industry, Innovation & Infrastructure. By visualizing internet speeds across countries and continents, we show where innovation is advancing digital infrastructure and which regions need investment. Use the filters, explore the 3D globe, and compare countries for deep insights!</p>
+  </section>
 
-    <section class="panel panel-flex" data-aos="fade-up">
-      <div class="left-flex">
-        <h3>Map & Globe</h3>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-          <div class="infoBox"><h4>Interactive Globe</h4><div id="globeViz"></div></div>
-          <div class="infoBox"><h4>Map Choropleth</h4><div id="map"></div></div>
-        </div>
-      </div>
+  <footer><small>Built for STEAM Showcase — interactive, exportable, and SDG-9 focused.</small></footer>
+</main>
 
-      <div class="right-flex">
-        <h3>Continent Results</h3>
-        <div id="summary" class="small">Run a query to see results.</div>
-        <div style="margin-top:12px"><canvas id="mainChart"></canvas></div>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+AOS.init();
 
-        <div style="margin-top:12px" class="infoBox">
-          <h4>Country Details</h4>
-          <div id="countryDetails">Click a country on the globe or map to see details here.</div>
-        </div>
-      </div>
-    </section>
-
-    <section class="panel grid" data-aos="fade-up">
-      <div class="card">
-        <h3>Region Averages</h3>
-        <canvas id="regionAvgChart"></canvas>
-      </div>
-
-      <div class="card">
-        <h3>Top Countries & Outliers</h3>
-        <ol id="topList" class="small"></ol>
-        <div id="outliers" class="small" style="margin-top:8px"></div>
-      </div>
-    </section>
-
-    <section class="panel" data-aos="fade-up" id="storyPanel">
-      <h3>Project Story — SDG 9</h3>
-      <p class="small">This project uses internet speed as a proxy for digital infrastructure. It supports SDG 9 by identifying where infrastructure and innovation investments correlate with speed improvements. Judges: interact with the filters, export the PDF report, and explore map overlays for policy insights.</p>
-    </section>
-
-    <footer><small>Built for STEAM Showcase — interactive, exportable, and SDG-9 focused.</small></footer>
-  </main>
-
-  <script>
-    AOS.init();
-
-    // ---------- sample CSV included (small) ----------
-    const sampleCSV = `country,major_area,region,year 2017,year 2018,year 2019,year 2020,year 2021,year 2022,year 2023,year 2024
+// ---------- sample CSV ----------
+const sampleCSV = `country,major_area,region,year2017,year2018,year2019,year2020,year2021,year2022,year2023,year2024
 Afghanistan,Asia,Southern Asia,null,null,6.49,8.2,9.23,1.9,2.84,3.63
 Albania,Europe,Southern Europe,11.48,14.71,28.61,37.11,41.47,33.67,46.47,62.71
 Algeria,Africa,Northern Africa,3.98,3.52,4.06,3.92,9.95,10.84,11.3,14.26
@@ -153,142 +132,135 @@ Canada,Americas,Northern America,30.1,40.5,50.2,62.3,70.1,72.0,75.9,88.0
 China,Asia,Eastern Asia,70.2,75.1,80.5,85.7,90.2,92.5,95.3,120.4
 Egypt,Africa,Northern Africa,7.5,8.2,9.1,10.0,11.5,12.2,13.4,14.6`;
 
-    // ---------- helpers to parse CSV ----------
-    function csvToRows(text){ return text.trim().split('
-').map(line=>line.split(',')); }
-    function parseRows(rows){ const data=[]; for(let i=1;i<rows.length;i++){ const p = rows[i].map(s=>s.trim()); if(p.length<11) continue; const country=p[0], majorArea=p[1], region=p[2]; const s23 = (p[9]===''||p[9].toLowerCase()==='null')?0:parseFloat(p[9]); const s24 = (p[10]===''||p[10].toLowerCase()==='null')?0:parseFloat(p[10]); data.push({country,majorArea,region,speed2023:s23,speed2024:s24}); } return data; }
+// ---------- helpers ----------
+function csvToRows(text){ return text.trim().split('\n').map(line=>line.split(',')); }
+function parseRows(rows){
+  const data=[];
+  for(let i=1;i<rows.length;i++){
+    const p = rows[i].map(s=>s.trim());
+    if(p.length<11) continue;
+    const country=p[0], majorArea=p[1], region=p[2];
+    const s23 = (p[9]===''||p[9].toLowerCase()==='null')?0:parseFloat(p[9]);
+    const s24 = (p[10]===''||p[10].toLowerCase()==='null')?0:parseFloat(p[10]);
+    data.push({country,majorArea,region,speed2023:s23,speed2024:s24});
+  }
+  return data;
+}
 
-    // ---------- state ----------
-    let records = [];
-    let mainChart=null, regionAvgChart=null, mapLayer=null, globe=null, globePolygons=null;
+// ---------- state ----------
+let records=[];
+let countryChart=null, topChart=null, globe=null;
 
-    // ---------- DOM refs ----------
-    const csvFile = document.getElementById('csvFile');
-    const uploadBtn = document.getElementById('uploadBtn');
-    const useSample = document.getElementById('useSample');
-    const runQuery = document.getElementById('runQuery');
-    const topNBtn = document.getElementById('topNBtn');
-    const yearSelect = document.getElementById('yearSelect');
-    const continentInput = document.getElementById('continentInput');
-    const summary = document.getElementById('summary');
-    const topList = document.getElementById('topList');
-    const outliersDiv = document.getElementById('outliers');
-    const tableHead = document.getElementById('tableHead');
-    const tableBody = document.getElementById('tableBody');
-    const countryDetails = document.getElementById('countryDetails');
+// ---------- DOM ----------
+const csvFile=document.getElementById('csvFile');
+const uploadBtn=document.getElementById('uploadBtn');
+const useSample=document.getElementById('useSample');
+const runQuery=document.getElementById('runQuery');
+const yearSelect=document.getElementById('yearSelect');
+const countryInput=document.getElementById('countryInput');
+const kpiAvg=document.getElementById('kpiAvg');
+const kpiGrowth=document.getElementById('kpiGrowth');
+const kpiImpact=document.getElementById('kpiImpact');
+const topList=document.getElementById('topList');
+const outliersDiv=document.getElementById('outliers');
 
-    // ---------- file handling ----------
-    uploadBtn.addEventListener('click', ()=> csvFile.click());
-    csvFile.addEventListener('change', (e)=>{ const f = e.target.files[0]; if(!f) return; const r = new FileReader(); r.onload=()=>{ const rows=csvToRows(r.result); records=parseRows(rows); onDataLoaded(); }; r.readAsText(f); });
-    useSample.addEventListener('click', ()=>{ records = parseRows(csvToRows(sampleCSV)); onDataLoaded(); });
+// ---------- file handling ----------
+uploadBtn.addEventListener('click', ()=> csvFile.click());
+csvFile.addEventListener('change',(e)=>{
+  const f=e.target.files[0];
+  if(!f) return;
+  const reader=new FileReader();
+  reader.onload=()=>{ const rows=csvToRows(reader.result); records=parseRows(rows); onDataLoaded(); };
+  reader.readAsText(f);
+});
+useSample.addEventListener('click', ()=>{ records=parseRows(csvToRows(sampleCSV)); onDataLoaded(); });
 
-    // ---------- render table ----------
-    function renderTable(dataArr){ if(!tableHead) return; tableHead.innerHTML = `<tr><th>#</th><th>Country</th><th>Continent</th><th>Region</th><th>2023</th><th>2024</th></tr>`; tableBody.innerHTML=''; dataArr.forEach((r,i)=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${i+1}</td><td>${r.country}</td><td>${r.majorArea}</td><td>${r.region}</td><td>${r.speed2023}</td><td>${r.speed2024}</td>`; tableBody.appendChild(tr); }); }
+// ---------- charts ----------
+function drawBarChart(ctx, labels, values, label){
+  if(ctx.chart) ctx.chart.destroy();
+  ctx.chart = new Chart(ctx,{
+    type:'bar',
+    data:{labels, datasets:[{label,data:values,backgroundColor:'rgba(96,165,250,0.9)',borderRadius:6}]},
+    options:{responsive:true,plugins:{legend:{display:false}, tooltip:{callbacks:{label:ctx=>ctx.formattedValue+' Mbps'}}},scales:{y:{beginAtZero:true}}}
+  });
+}
 
-    // ---------- charts ----------
-    function drawMainChart(labels, values, title=''){ const ctx = document.getElementById('mainChart'); if(mainChart) mainChart.destroy(); const grad = ctx.getContext('2d').createLinearGradient(0,0,0,300); grad.addColorStop(0,'rgba(96,165,250,0.95)'); grad.addColorStop(1,'rgba(125,211,252,0.2)'); mainChart = new Chart(ctx,{ type:'bar', data:{ labels, datasets:[{ label:title, data:values, backgroundColor:grad, borderRadius:6 }]}, options:{ responsive:true, plugins:{legend:{display:false}, tooltip:{callbacks:{label:ctx=>ctx.formattedValue+' Mbps'}}}, scales:{y:{beginAtZero:true}} } }); }
+// ---------- compute KPIs ----------
+function computeKPIs(){
+  if(!records||records.length===0) return;
+  const avg24 = records.reduce((s,r)=>s+r.speed2024,0)/records.length;
+  const improved = records.filter(r=>r.speed2024-r.speed2023>0).length;
+  const meanGrowth = records.reduce((a,b)=>a+b.speed2024-b.speed2023,0)/records.length;
+  const impactScore = Math.max(0,(meanGrowth/(avg24||1))*100);
+  kpiAvg.innerText=avg24.toFixed(2);
+  kpiGrowth.innerText=improved;
+  kpiImpact.innerText=impactScore.toFixed(1);
+}
 
-    function drawRegionAvgChart(items, year){ const ctx = document.getElementById('regionAvgChart'); if(regionAvgChart) regionAvgChart.destroy(); const labs=items.map(i=>i.region); const vals=items.map(i=>i.avg); regionAvgChart = new Chart(ctx,{ type:'bar', data:{ labels:labs, datasets:[{ label:'Avg '+year, data:vals, backgroundColor:'rgba(96,165,250,0.9)'}]}, options:{ indexAxis:'y', responsive:true, plugins:{legend:{display:false}} } }); }
+// ---------- run query ----------
+runQuery.addEventListener('click',()=>{
+  const year=yearSelect.value;
+  const countries=countryInput.value.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
+  if(countries.length===0){ alert('Enter at least one country'); return; }
+  const filtered=records.filter(r=>countries.includes(r.country.toLowerCase()));
+  if(filtered.length===0){ alert('No matching countries'); return; }
+  const ctx=document.getElementById('countryChart');
+  const labels=filtered.map(r=>r.country);
+  const values=filtered.map(r=>year==='2023'?r.speed2023:year==='2024'?r.speed2024: (r.speed2023+r.speed2024)/2 );
+  drawBarChart(ctx, labels, values, 'Internet Speeds');
+});
 
-    // ---------- compute region averages ----------
-    function computeRegionAverages(dataArr, yearStr){ const totals={}, counts={}; dataArr.forEach(r=>{ const key=r.region||r.majorArea||'Unknown'; const val=(yearStr==='2023')?r.speed2023:r.speed2024; totals[key]=(totals[key]||0)+val; counts[key]=(counts[key]||0)+1; }); const out=[]; Object.keys(totals).forEach(k=>out.push({region:k,avg:totals[k]/counts[k]})); out.sort((a,b)=>b.avg-a.avg); return out; }
+// ---------- Top 5 countries chart ----------
+function drawTopCountries(){
+  const sorted=records.slice().sort((a,b)=>b.speed2024-a.speed2024).slice(0,5);
+  const labels=sorted.map(r=>r.country);
+  const values=sorted.map(r=>r.speed2024);
+  drawBarChart(document.getElementById('topChart'), labels, values, 'Top 5 2024');
+}
+drawTopCountries();
 
-    // ---------- outlier detection ----------
-    function findOutliers(dataArr, year){ const vals=dataArr.map(r=> (year==='2023'?r.speed2023:r.speed2024)); const mean=vals.reduce((a,b)=>a+b,0)/vals.length; const std=Math.sqrt(vals.reduce((a,b)=>a+Math.pow(b-mean,2),0)/vals.length); const high=dataArr.filter(r => (year==='2023'? r.speed2023:r.speed2024) > mean + 2*std); const low=dataArr.filter(r => (year==='2023'? r.speed2023:r.speed2024) < mean - 2*std); return {mean,std,high,low}; }
+// ---------- Globe ----------
+function addGlobe(){
+  globe = Globe()
+    .globeImageUrl('//unpkg.com/three-globe/example/img/earth-dark.jpg')
+    .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
+    .pointsData(records)
+    .pointLat('lat')
+    .pointLng('lng')
+    .pointAltitude(r=>r.speed2024/150)
+    .pointColor(r=>'rgba(96,165,250,0.8)')
+    .pointLabel(r=>`${r.country}<br>2024: ${r.speed2024} Mbps`)
+    .onPointClick(r=> alert(`${r.country}:\n2023: ${r.speed2023} Mbps\n2024: ${r.speed2024} Mbps`))
+    .width(document.getElementById('globeViz').clientWidth)
+    .height(document.getElementById('globeViz').clientHeight)
+    .backgroundColor('#071427');
+  document.getElementById('globeViz').appendChild(globe.renderer().domElement);
+}
+addGlobe();
 
-    // ---------- query by continent (with highlights) ----------
-    let highlightedLayers = [];
-    function clearHighlights(){ if(mapLayer) mapLayer.eachLayer(l=>{ mapLayer.resetStyle(l); }); highlightedLayers=[]; if(globePolygons) globePolygons.forEach(p=>{ globe.polygonCapColor((f)=> colorForFeature(f)); }); }
+// ---------- data loaded ----------
+function onDataLoaded(){
+  computeKPIs();
+  drawTopCountries();
+}
 
-    function queryByContinent(continent, year){ clearHighlights(); const matched = records.filter(r=> r.majorArea && r.majorArea.toLowerCase().includes(continent.toLowerCase())); if(matched.length===0){ summary.innerText=`No countries found for "${continent}"`; drawMainChart([],[],`No data`); return; }
-      const key = (year==='2023')? 'speed2023':'speed2024'; const sorted = matched.slice().sort((a,b)=> b[key]-a[key]); const highest=sorted[0], lowest=sorted[sorted.length-1]; summary.innerHTML = `<strong>${matched.length}</strong> countries in ${continent}.<br>Highest (${year}): <strong>${highest.country}</strong> — ${highest[key]} Mbps<br>Lowest (${year}): <strong>${lowest.country}</strong> — ${lowest[key]} Mbps`;
-      const labels = sorted.map(r=>r.country); const values = sorted.map(r=>r[key]); drawMainChart(labels, values, `${continent} ${year} speeds`);
-      const regionAvg = computeRegionAverages(matched, year==='both'?'2024':year); drawRegionAvgChart(regionAvg.slice(0,12), year==='both'?'2024':year);
-      topList.innerHTML=''; sorted.slice(0,10).forEach((r,i)=>{ const li=document.createElement('li'); li.textContent = `${i+1}. ${r.country} — ${r[key]} Mbps`; topList.appendChild(li); });
-      const out = findOutliers(matched, year==='both'?'2024':year); outliersDiv.innerHTML = `<div class="small">Mean: ${out.mean.toFixed(2)} Mbps; Std: ${out.std.toFixed(2)}</div>`; if(out.high.length){ outliersDiv.innerHTML += `<div>High: ${out.high.map(x=>x.country).join(', ')}</div>` } if(out.low.length){ outliersDiv.innerHTML += `<div>Low: ${out.low.map(x=>x.country).join(', ')}</div>` }
+// ---------- export ----------
+document.getElementById('exportReport').addEventListener('click', async ()=>{
+  const node=document.querySelector('main.container');
+  const canvas = await html2canvas(node,{scale:2,useCORS:true});
+  const imgData=canvas.toDataURL('image/png');
+  const { jsPDF } = window.jspdf;
+  const pdf=new jsPDF('p','mm','a4');
+  const w=pdf.internal.pageSize.getWidth()-20;
+  const imgProps = pdf.getImageProperties(imgData);
+  const h=imgProps.height*(w/imgProps.width);
+  pdf.addImage(imgData,'PNG',10,10,w,h);
+  pdf.save('InternetSpeedsReport.pdf');
+});
 
-      // ---- highlight on map & globe ----
-      const namesLower = matched.map(x=>x.country.toLowerCase());
-      if(mapLayer) mapLayer.eachLayer(layer=>{
-        const name = (layer.feature.properties.name || '').toLowerCase();
-        if(namesLower.includes(name)){
-          layer.setStyle({weight:2, color:'#facc15'});
-          highlightedLayers.push(layer);
-        }
-      });
-      // highlight globe polygons
-      if(globePolygons){ globePolygons.forEach(f=>{
-        const name = (f.properties && (f.properties.name || '')).toLowerCase();
-        if(namesLower.includes(name)){
-          globe.polygonCapColor()(f, '#facc15');
-        }
-      }); }
-    }
-
-    // ---------- top N ----------
-    function showTopN(n, year){ if(records.length===0){ alert('Load data first'); return; } const key = (year==='2023')?'speed2023':'speed2024'; const sortedAll = records.slice().sort((a,b)=> b[key]-a[key]); const top = sortedAll.slice(0,n); const labels = top.map(x=>x.country); const values = top.map(x=>x[key]); drawMainChart(labels, values, `Top ${n} (${year})`); topList.innerHTML=''; top.forEach((r,i)=>{ const li=document.createElement('li'); li.textContent = `${i+1}. ${r.country} — ${r[key]} Mbps`; topList.appendChild(li); }); }
-
-    // ---------- KPIs & export ----------
-    function animateNumber(el,start,end,duration=900){ const step=25; const steps=Math.ceil(duration/step); let cur=start; const inc=(end-start)/steps; const t=setInterval(()=>{ cur+=inc; el.innerText = Math.abs(end)>=100? Math.round(cur): cur.toFixed(2); if((inc>0 && cur>=end) || (inc<0 && cur<=end)){ el.innerText = Math.abs(end)>=100? Math.round(end): end.toFixed(2); clearInterval(t); } },step); }
-    function computeKPIs(){ if(!records || records.length===0) return; const avg24 = records.reduce((s,r)=>s+r.speed2024,0)/records.length; const improved = records.filter(r=> r.speed2024 - r.speed2023 > 0).length; const growths = records.map(r=> r.speed2024 - r.speed2023); const meanGrowth = growths.reduce((a,b)=>a+b,0)/growths.length; const impactScore = Math.max(0, (meanGrowth / (avg24||1)) * 100); animateNumber(document.getElementById('kpiAvg'),0,avg24,1100); animateNumber(document.getElementById('kpiGrowth'),0,improved,1100); animateNumber(document.getElementById('kpiImpact'),0,impactScore.toFixed(1),1100); }
-
-    document.getElementById('showKPI').addEventListener('click', computeKPIs);
-    document.getElementById('topNBtn').addEventListener('click', ()=> showTopN(10, yearSelect.value));
-    document.getElementById('runQuery').addEventListener('click', ()=>{ const cont=continentInput.value.trim(); if(!cont){ alert('Enter a continent'); return;} queryByContinent(cont, yearSelect.value); });
-
-    // Export PDF of main container
-    document.getElementById('exportReport').addEventListener('click', async ()=>{ const node=document.querySelector('main.container'); const canvas = await html2canvas(node, {scale:1.5, useCORS:true}); const imgData = canvas.toDataURL('image/png'); const { jsPDF } = window.jspdf; const pdf = new jsPDF('p','mm','a4'); const w = pdf.internal.pageSize.getWidth() - 20; const imgProps = pdf.getImageProperties(imgData); const h = imgProps.height * (w / imgProps.width); pdf.addImage(imgData,'PNG',10,10,w,h); pdf.save('Internet-Speeds-Report.pdf'); });
-
-    // ---------- map (Leaflet choropleth) ----------
-    const map = L.map('map', {attributionControl:false}).setView([20,0],2);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:6,attribution: ''}).addTo(map);
-
-    async function loadWorldGeo(){ const topo = await fetch('https://unpkg.com/world-atlas@2.0.2/world/110m.json').then(r=>r.json()); const geo = topojson.feature(topo, topo.objects.countries); return geo; }
-
-    function countryToSpeedMap(){ const m = {}; records.forEach(r=>{ m[r.country.toLowerCase()] = r.speed2024; }); return m; }
-
-    function colorForSpeed(v){ if(!v || v===0) return '#94a3b8'; if(v>150) return '#06b6d4'; if(v>80) return '#60a5fa'; if(v>30) return '#7dd3fc'; return '#fecaca'; }
-
-    function addChoropleth(geo){ if(mapLayer) map.removeLayer(mapLayer);
-      const speedMap = countryToSpeedMap();
-      mapLayer = L.geoJSON(geo, { style: feature=>{ const name = (feature.properties && (feature.properties.name || feature.properties.NAME)) || ''; const v = speedMap[name.toLowerCase()] || 0; const color = colorForSpeed(v); return {fillColor:color, color:'#0b1220', weight:0.3, fillOpacity:0.85}; }, onEachFeature:(feature, layer)=>{ const name = (feature.properties && (feature.properties.name || feature.properties.NAME)) || 'Unknown'; const v = speedMap[name.toLowerCase()] || 'No data'; layer.bindPopup(`<strong>${name}</strong><br/>2024 speed: ${v} Mbps`); layer.on('click', ()=>{ showCountryDetailsFromName(name); }); layer.on('mouseover', ()=>{ layer.setStyle({weight:1.5}); }); layer.on('mouseout', ()=>{ mapLayer.resetStyle(layer); }); } }).addTo(map);
-    }
-
-    // ---------- Globe (Globe.gl) ----------
-    async function initGlobe(){ const globeEl = document.getElementById('globeViz'); globe = Globe()(globeEl)
-        .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
-        .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
-        .showAtmosphere(true)
-        .atmosphereColor('#3b82f6')
-        .polygonsCapColor(f => colorForFeature(f))
-        .polygonsData([])
-        .polygonLabel(f => `${f.properties.name}`)
-        .onPolygonHover(({ polygon, feature })=>{})
-        .onPolygonClick(feature => { const name = feature.properties && (feature.properties.name || ''); showCountryDetailsFromName(name); });
-
-      // load topojson and set polygons
-      const topo = await fetch('https://unpkg.com/world-atlas@2.0.2/world/110m.json').then(r=>r.json());
-      const geo = topojson.feature(topo, topo.objects.countries);
-      globePolygons = geo.features;
-      globe.polygonsData(geo.features).polygonsTransitionDuration(300);
-
-      // rotate slowly
-      globe.controls().autoRotate = true;
-      globe.controls().autoRotateSpeed = 0.4;
-    }
-
-    function colorForFeature(f){ if(!f || !f.properties) return '#94a3b8'; const name = (f.properties.name||'').toLowerCase(); const speedMap = countryToSpeedMap(); const v = speedMap[name] || 0; return colorForSpeed(v); }
-
-    function showCountryDetailsFromName(name){ if(!name) return; const lower = name.toLowerCase(); const rec = records.find(r=> r.country.toLowerCase() === lower); if(!rec){ countryDetails.innerHTML = `<div><strong>${name}</strong><div class="small">No data available</div></div>`; return; } countryDetails.innerHTML = `<div><strong>${rec.country}</strong><div class="small">Region: ${rec.region} • Continent: ${rec.majorArea}</div><div style="margin-top:8px">2023: <strong>${rec.speed2023} Mbps</strong><br/>2024: <strong>${rec.speed2024} Mbps</strong><br/>Change: <strong>${(rec.speed2024 - rec.speed2023).toFixed(2)} Mbps</strong></div></div>`; }
-
-    // ---------- when data loads ----------
-    async function onDataLoaded(){ renderTable(records); computeKPIs(); const regionAvg = computeRegionAverages(records,'2024'); drawRegionAvgChart(regionAvg.slice(0,12),'2024'); showTopN(5,'2024'); try{ const geo = await loadWorldGeo(); addChoropleth(geo); }catch(e){ console.warn('Map load failed', e); } if(!globe) await initGlobe(); else globe.polygonsData(globePolygons);
-      // update globe colors
-      globe.polygonsData(globePolygons);
-    }
-
-    // auto-load sample for demo
-    (function init(){ records = parseRows(csvToRows(sampleCSV)); onDataLoaded(); })();
-  </script>
+// ---------- init ----------
+records=parseRows(csvToRows(sampleCSV));
+onDataLoaded();
+</script>
 </body>
 </html>
