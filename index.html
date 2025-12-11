@@ -1,139 +1,190 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Global Internet Speed Analyzer — Showcase</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Global Internet Speed Dashboard</title>
 
-  <!-- Chart.js & PapaParse -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
-  <link rel="stylesheet" href="style.css" />
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            background: radial-gradient(circle at top, #1a1c2e, #0d0f1a);
+            font-family: 'Inter', sans-serif;
+        }
+        .glass {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(12px);
+        }
+        .fade {
+            animation: fadeIn .8s ease forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
-<body>
-  <header class="topbar">
-    <h1>Global Internet Speed Analyzer</h1>
-    <p class="subtitle">Interactive STEAM project — explore speeds, growth & inequality</p>
-  </header>
 
-  <main class="wrap">
-    <section class="controls card">
-      <div class="row">
-        <div class="col">
-          <label for="regionSelect">Filter by region (continent):</label>
-          <select id="regionSelect"><option value="All">All regions</option></select>
+<body class="text-white p-6">
+
+    <h1 class="text-4xl font-bold mb-6 text-center text-purple-300">
+        🌐 Global Internet Speed Analytics Dashboard
+    </h1>
+
+    <div class="max-w-5xl mx-auto mt-10 grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+        <!-- REGION ANALYSIS PANEL -->
+        <div class="glass rounded-xl p-6 fade shadow-lg border border-purple-600/20">
+            <h2 class="text-2xl mb-3 font-semibold text-purple-300">Region Speed Insights</h2>
+            <p class="mb-4 text-gray-200 text-sm">Select a region to view the fastest & slowest countries.</p>
+
+            <select id="regionSelect" class="w-full p-3 rounded bg-purple-900/40 text-purple-200 border border-purple-500">
+                <option>Select a Region</option>
+                <option>Western Europe</option>
+                <option>Eastern Europe</option>
+                <option>Northern Europe</option>
+                <option>Southern Europe</option>
+                <option>South America</option>
+                <option>Central America</option>
+                <option>Northern Africa</option>
+                <option>Southern Africa</option>
+                <option>Eastern Africa</option>
+                <option>Southern Asia</option>
+                <option>SouthEastern Asia</option>
+                <option>Caribbean</option>
+                <option>Melanesia</option>
+            </select>
+
+            <div id="regionResults" class="mt-6 text-md"></div>
         </div>
 
-        <div class="col">
-          <label for="searchBox">Search country:</label>
-          <input id="searchBox" placeholder="Type country name..." />
+        <!-- COUNTRY COMPARISON CHART -->
+        <div class="glass rounded-xl p-6 fade shadow-lg border border-purple-600/20">
+            <h2 class="text-2xl mb-4 font-semibold text-purple-300">Compare Country Trends (2023 → 2024)</h2>
+
+            <p class="mb-2 text-gray-200 text-sm">Choose 1–5 countries to compare:</p>
+            <select id="countrySelect" multiple size="6"
+                class="w-full p-3 rounded bg-blue-900/40 text-blue-200 border border-blue-500">
+            </select>
+
+            <button onclick="updateChart()" 
+                class="mt-4 px-4 py-2 rounded bg-gradient-to-r from-purple-500 to-blue-500 hover:opacity-80 transition">
+                Generate Chart
+            </button>
+
+            <canvas id="trendChart" class="mt-6"></canvas>
         </div>
+    </div>
 
-        <div class="col">
-          <label>Quick actions:</label>
-          <div class="btnrow">
-            <button id="btn-highlow">Highest / Lowest (2024)</button>
-            <button id="btn-improve">Biggest Improvement (2023→2024)</button>
-            <button id="btn-dii">Digital Inequality Index</button>
-          </div>
-        </div>
-      </div>
 
-      <div class="row small">
-        <div class="col stat">
-          <div class="stat-title">Total countries loaded</div>
-          <div id="totalCount" class="stat-value">—</div>
-        </div>
-        <div class="col stat">
-          <div class="stat-title">Records shown</div>
-          <div id="shownCount" class="stat-value">—</div>
-        </div>
-        <div class="col stat">
-          <div class="stat-title">Records added (session)</div>
-          <div id="addedCount" class="stat-value">0</div>
-        </div>
-      </div>
-    </section>
+    <!-- DATA + SCRIPT LOGIC -->
+    <script>
+        /**************************************
+         * SAMPLE DATA (Replace with your CSV)
+         **************************************/
+        const data = [
+            {country:"USA", region:"Northern America", speed2023:100, speed2024:140},
+            {country:"Canada", region:"Northern America", speed2023:95, speed2024:120},
+            {country:"Germany", region:"Western Europe", speed2023:80, speed2024:100},
+            {country:"France", region:"Western Europe", speed2023:75, speed2024:90},
+            {country:"Japan", region:"SouthEastern Asia", speed2023:110, speed2024:160},
+            {country:"South Korea", region:"SouthEastern Asia", speed2023:150, speed2024:210},
+            {country:"Brazil", region:"South America", speed2023:40, speed2024:60},
+            {country:"Argentina", region:"South America", speed2023:45, speed2024:55}
+        ];
 
-    <section class="card grid2">
-      <div>
-        <h3>Results</h3>
-        <div id="results" class="results">Choose a region or click an analysis button.</div>
+        /**************************************
+         * POPULATE COUNTRY DROPDOWN
+         **************************************/
+        const countrySelect = document.getElementById("countrySelect");
+        data.forEach(r => {
+            const opt = document.createElement("option");
+            opt.textContent = r.country;
+            countrySelect.appendChild(opt);
+        });
 
-        <h3 style="margin-top:18px">Charts</h3>
-        <canvas id="regionChart" height="160"></canvas>
-      </div>
+        /**************************************
+         * REGION ANALYSIS
+         **************************************/
+        document.getElementById("regionSelect").addEventListener("change", () => {
+            const region = document.getElementById("regionSelect").value;
+            const subset = data.filter(r => r.region === region);
 
-      <div>
-        <h3>Country trend (select a country to view)</h3>
-        <select id="countrySelect"><option value="">— choose country —</option></select>
-        <canvas id="trendChart" height="220" style="margin-top:10px"></canvas>
+            if (subset.length === 0) {
+                document.getElementById("regionResults").innerHTML =
+                    "<p class='text-red-400'>No data available.</p>";
+                return;
+            }
 
-        <div class="small-controls" style="margin-top:10px">
-          <button id="exportCSV">Export table as CSV</button>
-          <button id="downloadJSON">Download JSON</button>
-        </div>
-      </div>
-    </section>
+            let fastest = subset.reduce((a,b)=>a.speed2024>b.speed2024 ? a : b);
+            let slowest = subset.reduce((a,b)=>a.speed2024<b.speed2024 ? a : b);
+            
+            document.getElementById("regionResults").innerHTML = `
+                <div class="mt-4 p-4 bg-black/20 rounded-lg">
+                    <p><span class="text-green-400 font-bold">Fastest:</span> ${fastest.country} — ${fastest.speed2024} Mbps</p>
+                    <p><span class="text-red-400 font-bold">Slowest:</span> ${slowest.country} — ${slowest.speed2024} Mbps</p>
+                    <p class="mt-3 text-purple-300 font-semibold">Digital Gap: ${(fastest.speed2024 - slowest.speed2024).toFixed(2)} Mbps</p>
+                </div>
+            `;
+        });
 
-    <section class="card">
-      <h3>Data table (click header to sort) <small style="opacity:.7">• double-click a row to add to local storage</small></h3>
+        /**************************************
+         * MULTI-COUNTRY COMPARISON CHART
+         **************************************/
+        let chartInstance = null;
 
-      <div class="table-controls">
-        <label for="pageSize">Rows: </label>
-        <select id="pageSize">
-          <option>10</option><option>25</option><option>50</option><option>100</option>
-        </select>
-        <button id="clearLocal">Clear saved entries</button>
-      </div>
+        function updateChart() {
+            const selected = [...countrySelect.selectedOptions].map(o => o.text);
 
-      <div class="table-wrap">
-        <table id="dataTable">
-          <thead>
-            <tr>
-              <th data-key="country">Country</th>
-              <th data-key="major_area">Continent</th>
-              <th data-key="region">Region</th>
-              <th data-key="year 2023">2023</th>
-              <th data-key="year 2024">2024</th>
-              <th data-key="growth">Δ (24-23)</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
+            if (selected.length === 0) return;
 
-      <div class="pagination">
-        <button id="prevPage">Prev</button>
-        <span id="pageInfo">1</span>
-        <button id="nextPage">Next</button>
-      </div>
-    </section>
+            if (chartInstance) chartInstance.destroy();
 
-    <section class="card">
-      <h3>Add a new or correct a record (saves in browser)</h3>
-      <form id="addForm">
-        <div class="row">
-          <input id="a_country" placeholder="Country" required />
-          <input id="a_major" placeholder="Continent (major_area)" required />
-          <input id="a_region" placeholder="Region" required />
-        </div>
-        <div class="row">
-          <input id="a_2023" placeholder="2023 speed (number or blank)" />
-          <input id="a_2024" placeholder="2024 speed (number or blank)" />
-        </div>
-        <div class="row">
-          <button type="submit">Add / Save</button>
-          <button id="resetForm" type="button">Reset</button>
-        </div>
-      </form>
-    </section>
+            const ctx = document.getElementById("trendChart");
 
-  </main>
+            const colors = [
+                "rgba(120, 70, 255, 1)",
+                "rgba(80, 150, 255, 1)",
+                "rgba(180, 80, 255, 1)",
+                "rgba(100, 200, 255, 1)",
+                "rgba(160, 120, 255, 1)"
+            ];
 
-  <footer class="foot">Built for STEAM Showcase — interactive data visualizer</footer>
+            const datasets = selected.map((name, i) => {
+                const r = data.find(x => x.country === name);
+                return {
+                    label: name,
+                    data: [r.speed2023, r.speed2024],
+                    borderColor: colors[i % colors.length],
+                    backgroundColor: colors[i % colors.length],
+                    borderWidth: 3,
+                    tension: 0.3
+                };
+            });
 
-  <script src="script.js"></script>
+            chartInstance = new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: ["2023", "2024"],
+                    datasets: datasets
+                },
+                options: {
+                    plugins: {
+                        legend: { labels: { color: "white" }}
+                    },
+                    scales: {
+                        x: { ticks: { color: "white" }},
+                        y: { ticks: { color: "white" }}
+                    }
+                }
+            });
+        }
+    </script>
+
 </body>
 </html>
