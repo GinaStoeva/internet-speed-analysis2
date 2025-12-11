@@ -11,6 +11,18 @@ Canada,Americas,Northern America,30.1,40.5,50.2,62.3,70.1,72.0,75.9,88.0
 China,Asia,Eastern Asia,70.2,75.1,80.5,85.7,90.2,92.5,95.3,120.4
 Egypt,Africa,Northern Africa,7.5,8.2,9.1,10.0,11.5,12.2,13.4,14.6`;
 
+// Mapping for country -> lat/lng (only for sample, can expand for real data)
+const countryCoords = {
+  "Afghanistan": {lat:33.93911, lng:67.709953},
+  "Albania": {lat:41.153332, lng:20.168331},
+  "Algeria": {lat:28.033886, lng:1.659626},
+  "Australia": {lat:-25.274398, lng:133.775136},
+  "Brazil": {lat:-14.235004, lng:-51.92528},
+  "Canada": {lat:56.130366, lng:-106.346771},
+  "China": {lat:35.86166, lng:104.195397},
+  "Egypt": {lat:26.820553, lng:30.802498}
+};
+
 // Parse CSV
 function csvToRows(text){ return text.trim().split('\n').map(line=>line.split(',')); }
 function parseRows(rows){
@@ -21,7 +33,8 @@ function parseRows(rows){
     const country=p[0], majorArea=p[1], region=p[2];
     const s23=(p[9]===''||p[9].toLowerCase()==='null')?0:parseFloat(p[9]);
     const s24=(p[10]===''||p[10].toLowerCase()==='null')?0:parseFloat(p[10]);
-    data.push({country,majorArea,region,speed2023:s23,speed2024:s24});
+    const coords = countryCoords[country] || {lat: Math.random()*140-70, lng: Math.random()*360-180};
+    data.push({country,majorArea,region,speed2023:s23,speed2024:s24,...coords});
   }
   return data;
 }
@@ -102,19 +115,24 @@ function addGlobe(){
   globe = Globe()
     .globeImageUrl('//unpkg.com/three-globe/example/img/earth-dark.jpg')
     .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
-    .pointsData(records.map(r=>{
-      const coords = {lat: Math.random()*140-70, lng: Math.random()*360-180}; // placeholder lat/lng
-      return {...r, ...coords};
-    }))
+    .pointsData(records)
     .pointLat('lat')
     .pointLng('lng')
     .pointAltitude(r=>r.speed2024/150)
-    .pointColor(r=>'rgba(96,165,250,0.8)')
-    .pointLabel(r=>`${r.country}<br>2024: ${r.speed2024} Mbps`)
-    .onPointClick(r=> alert(`${r.country}:\n2023: ${r.speed2023} Mbps\n2024: ${r.speed2024} Mbps`))
+    .pointColor(r=>{
+      if(r.speed2024>100) return '#0ea5a4';
+      if(r.speed2024>50) return '#60a5fa';
+      if(r.speed2024>20) return '#7dd3fc';
+      return '#94a3b8';
+    })
+    .pointLabel(r=>`${r.country}<br>Continent: ${r.majorArea}<br>2023: ${r.speed2023} Mbps<br>2024: ${r.speed2024} Mbps`)
+    .onPointClick(r=> alert(`${r.country}:\n2023: ${r.speed2023} Mbps\n2024: ${r.speed2024} Mbps\nRegion: ${r.region}`))
     .width(document.getElementById('globeViz').clientWidth)
     .height(document.getElementById('globeViz').clientHeight)
-    .backgroundColor('#071427');
+    .backgroundColor('#071427')
+    .showAtmosphere(true)
+    .atmosphereColor('rgba(0,150,255,0.1)')
+    .onGlobeReady(()=>{ globe.controls().autoRotate=true; globe.controls().autoRotateSpeed=0.2; });
   document.getElementById('globeViz').appendChild(globe.renderer().domElement);
 }
 addGlobe();
